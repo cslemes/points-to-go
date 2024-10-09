@@ -11,7 +11,7 @@ type Customer struct {
 	UUID             string    `json:"uuid" gorm:"primaryKey"`
 	DescCustomerName string    `json:"customer_name"`
 	CodCPF           *string   `json:"cpf" gorm:"unique"`
-	DescEmail        string    `json:"email" binding:"required,email" gorm:"unique"`
+	DescEmail        string    `json:"email" gorm:"unique"`
 	IdTwitch         *string   `json:"twitch" gorm:"unique"`
 	IdYouTube        *string   `json:"youtube" gorm:"unique"`
 	IdBlueSky        *string   `json:"bluesky" gorm:"unique"`
@@ -40,7 +40,7 @@ func (c *Customer) Create(db *gorm.DB) error {
 		return res.Error
 	}
 
-	defer res.Commit()
+	res.Commit()
 	return nil
 
 }
