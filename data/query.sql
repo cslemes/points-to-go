@@ -7,4 +7,6 @@
 
 SELECT * FROM transactions order by created_at desc;
 
-SELECT * FROM customers where uuid = '5f8fcbe0-6014-43f8-8b83-38cf2f4887b3';
+SELECT * FROM customers where uuid = '3ff921b4-df67-4c0a-a191-44bf8cba1fb1';
+
+-- SELECT * FROM customers;
