@@ -54,11 +54,13 @@ func GetCustomerByID(c *gin.Context) {
 func PostCustomer(c *gin.Context) {
 
 	customer := models.NewCustomer()
+	customerUUID := customer.UUID
 
 	if err := c.ShouldBindJSON(&customer); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	customer.UUID = customerUUID
 
 	err := myerrors.GetCreateCustomerErrors(customer.Create(dbConnection))
 
