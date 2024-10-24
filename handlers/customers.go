@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"points/models"
 	"points/myerrors"
@@ -63,7 +62,6 @@ func PostCustomer(c *gin.Context) {
 	customer.UUID = customerUUID
 
 	err := myerrors.GetCreateCustomerErrors(customer.Create(dbConnection))
-
 	if err != nil {
 
 		if err.Error() == myerrors.EmailCreateError.Error() {
@@ -71,7 +69,6 @@ func PostCustomer(c *gin.Context) {
 			return
 		}
 
-		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "solicitação incorreta"})
 		return
 	}
