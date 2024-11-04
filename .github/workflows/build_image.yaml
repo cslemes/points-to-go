@@ -51,6 +51,7 @@ jobs:
         uses: docker/metadata-action@v5
         env:
           REPO_PATH: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
+          GH_REPO: ${{ github.repository }}
         with:
           images: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
           tags: |
@@ -61,7 +62,7 @@ jobs:
             type=semver,pattern={{major}}
             type=sha,format=long
             type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${GITHUB_REPOSITORY}"
+            type=raw,value=$GH_REPO
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

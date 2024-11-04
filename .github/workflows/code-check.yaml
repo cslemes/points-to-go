@@ -14,13 +14,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Setup linter
-      #   uses: golangci/golangci-lint-action@v3
+      - name: Setup linter
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --timeout=5m
 
-      # - name: Run Lint
-      #   run: golangci-lint run
+      - name: Run Lint
+        run: golangci-lint run
+
       # - name: Run Tests
       #   run: go test -v
+
+      - name: Run gosec
+        uses: securego/gosec@master
+        with:
+          args: ./...
 
       - name: SonarQube Scan
         uses: SonarSource/sonarcloud-github-action@master
