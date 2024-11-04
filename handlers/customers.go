@@ -35,6 +35,7 @@ func GetCustomers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, customers)
+
 }
 
 func GetCustomerByID(c *gin.Context) {
