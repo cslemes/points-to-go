@@ -49,13 +49,11 @@ jobs:
       #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       #     echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Extract repository name
-        id: repo-name
-        run: echo "CONTAINER_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
-
       - name: Generate Docker metadata
         id: meta
         uses: docker/metadata-action@v5
+        env:
+          REPO_PATH: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
         with:
           images: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
           tags: |
@@ -74,5 +72,17 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            CONTAINER_NAME=${{ env.CONTAINER_NAME }}
+
+      - name: Check image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{env.REPO_PATH}}:${{ steps.meta.outputs.version }}
+          format: "sarif"
+          severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+          output: "trivy-results.sarif"
+
+      - name: Fazer upload dos resultados do Trivy para a aba de Segurança do GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "trivy-results.sarif"
