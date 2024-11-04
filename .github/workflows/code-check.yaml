@@ -32,7 +32,9 @@ jobs:
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v3.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          sonarToken: ${{ secrets.SONAR_TOKEN }}
+          host: "https://sonarcloud.io"
           projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
-          sonarOrganization: ${{ secrets.SONAR_ORGANIZATION }}
+          organization: ${{ secrets.SONAR_ORGANIZATION }}

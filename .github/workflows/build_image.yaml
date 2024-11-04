@@ -1,8 +1,11 @@
 name: Build and Push to ECR
 
 on:
-  push:
-    branches: [main]
+  pull_request:
+    branches:
+      - main
+  # push:
+  #   branches: [main]
 
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
