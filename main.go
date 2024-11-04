@@ -23,7 +23,10 @@ func main() {
 
 	if *migration {
 		log.Println("Executando migrations...")
-		db.AutoMigrate(&models.Customer{}, &models.Transaction{}, &models.TransactionProduct{}, &models.Product{})
+		err := db.AutoMigrate(&models.Customer{}, &models.Transaction{}, &models.TransactionProduct{}, &models.Product{})
+		if err != nil {
+			log.Fatal(err)
+		}
 		log.Println("ok")
 	}
 
@@ -40,8 +43,8 @@ func main() {
 
 	r.GET("/metrics", gin.WrapH(promhttp.Handler())) // prometheus
 
-	r.Run("0.0.0.0:8081")
-
-
+	if err := r.Run("0.0.0.0:8081"); err != nil {
+		log.Fatal("Failed to run server: ", err)
+	}
 
 }

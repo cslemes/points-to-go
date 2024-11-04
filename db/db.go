@@ -12,7 +12,10 @@ import (
 
 func OpenDBConnection() (*gorm.DB, error) {
 
-	godotenv.Load(".env")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	HOST_DB := os.Getenv("HOST_DB")
 	PORT_DB := os.Getenv("PORT_DB")
