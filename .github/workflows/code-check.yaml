@@ -6,7 +6,7 @@ on:
   push:
     branches: [main]
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,10 +22,10 @@ jobs:
       # - name: Run Tests
       #   run: go test -v
 
-      # - name: SonarQube Scan
-      #   uses: SonarSource/sonarqube-scan-action@v3.0.0
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v3.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       #   with:
       #     host: "https://sonarcloud.io"
       #     projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
