@@ -9,10 +9,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-      #   with:
-      #     fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # - name: Setup linter
       #   uses: golangci/golangci-lint-action@v3
@@ -23,10 +23,10 @@ jobs:
       #   run: go test -v
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v3
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: "https://sonarcloud.io"
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=cslemes_points-to-go
