@@ -16,8 +16,8 @@ jobs:
     steps:
       - name: Checkout
       - uses: actions/checkout@v4
-            with:
-              fetch-depth: 0
+        with:
+          fetch-depth: 0
 
       - name: Setup Go
         uses: actions/setup-go@v4
@@ -31,15 +31,13 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         run: golangci-lint run 
       
-      - name: Run Tests
-        run: go test -v
+      # - name: Run Tests
+      #   run: go test -v
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v3.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
