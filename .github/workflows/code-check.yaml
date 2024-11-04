@@ -26,7 +26,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v2
         with:
           # host: "https://sonarcloud.io"
-          sonar.projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
-          sonar.organization: ${{ secrets.SONAR_ORGANIZATION }}
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          organization: ${{ secrets.SONAR_ORGANIZATION }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
