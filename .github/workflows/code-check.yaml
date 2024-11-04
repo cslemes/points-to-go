@@ -23,7 +23,7 @@ jobs:
       #   run: go test -v
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v3.0.0
+        uses: SonarSource/sonarqube-scan-action@v2
         with:
           host: "https://sonarcloud.io"
           projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
