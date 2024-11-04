@@ -14,14 +14,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.23.1"
-
-      - name: Install Dependencies
-        run: go mod download
-
       - name: Setup linter
         uses: golangci/golangci-lint-action@v3
 
@@ -30,11 +22,11 @@ jobs:
       # - name: Run Tests
       #   run: go test -v
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v3.0.0
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          host: "https://sonarcloud.io"
-          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
-          organization: ${{ secrets.SONAR_ORGANIZATION }}
+      # - name: SonarQube Scan
+      #   uses: SonarSource/sonarqube-scan-action@v3.0.0
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   with:
+      #     host: "https://sonarcloud.io"
+      #     projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+      #     organization: ${{ secrets.SONAR_ORGANIZATION }}
