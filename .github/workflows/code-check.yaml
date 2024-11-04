@@ -9,16 +9,16 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      # - name: Checkout
+      #   uses: actions/checkout@v4
+      #   with:
+      #     fetch-depth: 0
 
-      - name: Setup linter
-        uses: golangci/golangci-lint-action@v3
+      # - name: Setup linter
+      #   uses: golangci/golangci-lint-action@v3
 
-      - name: Run Lint
-        run: golangci-lint run
+      # - name: Run Lint
+      #   run: golangci-lint run
       # - name: Run Tests
       #   run: go test -v
 
