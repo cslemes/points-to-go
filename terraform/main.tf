@@ -27,6 +27,9 @@ data "aws_ssm_parameter" "public_2" {
   name = format("/%s/vpc/subnet_public_2", var.project_name)
 }
 
+data "aws_ssm_parameter" "ecsTaskExecutionRole" {
+  name = format("/%s/ecs/task_execution_role", var.project_name)
+}
 
 resource "aws_ecs_task_definition" "task_def" {
   family                   = "task_def"
@@ -55,6 +58,8 @@ resource "aws_ecs_service" "my_service" {
   task_definition = data.aws_ssm_parameter.cluster_name.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  iam_role        = data.aws_ssm_parameter.ecsTaskExecutionRole.id
+
 
   network_configuration {
     subnets          = [data.aws_ssm_parameter.public_1.id, data.aws_ssm_parameter.public_2.id]
