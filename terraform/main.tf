@@ -38,6 +38,8 @@ resource "aws_ecs_task_definition" "task_def" {
   cpu                      = "256"
   memory                   = "512"
 
+  execution_role_arn = data.aws_ssm_parameter.ecsTaskExecutionRole.arn
+
   container_definitions = jsonencode([{
     name      = "my-container"
     image     = var.container_image
