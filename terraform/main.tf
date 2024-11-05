@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "task_def" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
-  task_role_arn            = data.aws_ssm_parameter.ecsTaskExecutionRole.arn
+  task_role_arn            = data.aws_ssm_parameter.ecsTaskExecutionRole.value
 
   container_definitions = jsonencode([{
     name      = "my-container"
