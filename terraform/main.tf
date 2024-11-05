@@ -28,8 +28,6 @@ data "aws_ssm_parameter" "public_2" {
 }
 
 
-
-
 resource "aws_ecs_task_definition" "task_def" {
   family                   = "task_def"
   network_mode             = "awsvpc"
@@ -59,8 +57,8 @@ resource "aws_ecs_service" "my_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [data.aws_ssm_parameter.public_1, data.aws_ssm_parameter.public_2] # Replace with your subnet id
-    security_groups  = ["default"]                                                        # Replace with your security group id
+    subnets          = [data.aws_ssm_parameter.public_1, data.aws_ssm_parameter.public_2]
+    security_groups  = ["default"]
     assign_public_ip = true
   }
 }
