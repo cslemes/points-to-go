@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "task_def" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
-  task_role_arn            = data.aws_ssm_parameter.ecsTaskExecutionRole.value
+
 
   container_definitions = jsonencode([{
     name      = "my-container"
@@ -59,7 +59,7 @@ resource "aws_ecs_service" "my_service" {
   task_definition = data.aws_ssm_parameter.cluster_name.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-
+  iam_role        = data.aws_ssm_parameter.ecsTaskExecutionRole.arn
 
 
   network_configuration {
