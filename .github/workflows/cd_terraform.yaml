@@ -14,6 +14,8 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   PROJECT_NAME: ${{ vars.PROJECT_NAME }}
   BUCKET_NAME: ${{ vars.BUCKET_NAME }}
+  REPOSITORY_NAME: ${{ github.event.repository.name }}
+  CONTAINER_IMAGE: ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.REPOSITORY_NAME }}
 
 jobs:
   deploy:
@@ -21,13 +23,6 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
-
-      - name: Read container name
-        id: read_container
-        run: |
-          CONTAINER_IMAGE=$(cat container_name.txt)
-          echo "Container image is $CONTAINER_IMAGE"
-          echo "container_image=$CONTAINER_IMAGE" >> $GITHUB_ENV
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

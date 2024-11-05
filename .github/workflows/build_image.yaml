@@ -98,12 +98,3 @@ jobs:
           build-args: |
             GO_VERSION=${{ env.GO_VERSION }}
             GITHUB_SHA=${{ github.sha }}
-      - name: Save image name
-        run: |
-          echo "${{ steps.build-image.outputs.image }}" >> container_image.txt
-
-      - name: Upload container name artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: container_image
-          path: container_image.txt
