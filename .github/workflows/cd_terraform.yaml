@@ -3,14 +3,14 @@ name: CD Pipeline - Dev
 on:
   push:
     branches:
-      - main
+      - dev
 
 env:
   TF_VERSION: "1.9.8"
   TF_WORKING_DIR: "./terraform"
   BUCKET_NAME: ${{ vars.BUCKET_NAME }}
   REPOSITORY_NAME: ${{ github.event.repository.name }}
-  CONTAINER_IMAGE: ${{ vars.AWS_ACCOUNT }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
+  CONTAINER_IMAGE: ${{ vars.AWS_ACCOUNT }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}:${{ GITHUB_SHA::8}
 
 jobs:
   deploy:
