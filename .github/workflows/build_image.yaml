@@ -11,7 +11,7 @@ name: Build and Push to ECR
 on:
   push:
     branches:
-      - dev
+      - main
 
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
