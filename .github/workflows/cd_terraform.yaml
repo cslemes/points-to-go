@@ -18,8 +18,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    needs:
-      - build-publish
+
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
