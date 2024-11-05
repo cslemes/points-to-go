@@ -11,13 +11,13 @@ data "aws_ssm_parameter" "cluster_name" {
   name = format("/%s/ecs/cluster_name", var.project_name)
 }
 
-data "aws_ssm_parameter" "cluster_arn" {
-  name = format("/%s/ecs/cluster_arn", var.project_name)
-}
+# data "aws_ssm_parameter" "cluster_arn" {
+#   name = format("/%s/ecs/cluster_arn", var.project_name)
+# }
 
-data "aws_ssm_parameter" "cluster_id" {
-  name = format("/%s/ecs/cluster_id", var.project_name)
-}
+# data "aws_ssm_parameter" "cluster_id" {
+#   name = format("/%s/ecs/cluster_id", var.project_name)
+# }
 
 data "aws_ssm_parameter" "public_1" {
   name = format("/%s/vpc/subnet_public_1", var.project_name)
@@ -51,8 +51,8 @@ resource "aws_ecs_task_definition" "task_def" {
 
 resource "aws_ecs_service" "my_service" {
   name            = "my-service"
-  cluster         = data.aws_ssm_parameter.cluster_id
-  task_definition = data.aws_ssm_parameter.cluster_arn
+  cluster         = data.aws_ssm_parameter.cluster_name.id
+  task_definition = data.aws_ssm_parameter.cluster_name.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
