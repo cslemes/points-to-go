@@ -58,7 +58,7 @@ resource "aws_ecs_service" "my_service" {
   task_definition = data.aws_ssm_parameter.cluster_name.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-  iam_role        = data.aws_ssm_parameter.ecsTaskExecutionRole.id
+  iam_role        = data.aws_ssm_parameter.ecsTaskExecutionRole.arn
 
 
   network_configuration {
