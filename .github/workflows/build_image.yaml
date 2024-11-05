@@ -97,4 +97,4 @@ jobs:
           platforms: linux/amd64
           build-args: |
             GO_VERSION=${{ env.GO_VERSION }}
-            GITHUB_SHA=${{ github.sha::8 }}
+            GITHUB_SHA=${{ github.sha }}
