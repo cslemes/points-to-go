@@ -20,11 +20,11 @@ data "aws_ssm_parameter" "cluster_id" {
 }
 
 data "aws_ssm_parameter" "public_1" {
-  name = format("/%s/network/public_1", var.project_name)
+  name = format("/%s/network/subnet_public_1", var.project_name)
 }
 
 data "aws_ssm_parameter" "public_2" {
-  name = format("/%s/network/public_2", var.project_name)
+  name = format("/%s/network/subnet_public_2", var.project_name)
 }
 
 
