@@ -28,7 +28,7 @@ data "aws_ssm_parameter" "public_2" {
 }
 
 data "aws_ssm_parameter" "ecsTaskExecutionRole" {
-  name = format("/%s/ecs/task_execution_role", var.project_name)
+  name = format("/%s/ecs/ecsTaskExecutionRole", var.project_name)
 }
 
 resource "aws_ecs_task_definition" "task_def" {
