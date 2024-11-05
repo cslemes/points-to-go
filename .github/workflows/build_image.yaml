@@ -51,7 +51,6 @@ jobs:
         uses: docker/metadata-action@v5
         env:
           REPO_PATH: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
-          GH_REPO:
 
         with:
           images: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
@@ -78,3 +77,12 @@ jobs:
           build-args: |
             GO_VERSION=${{ env.GO_VERSION }}
             GITHUB_SHA=${{ github.sha }}
+      - name: Save image name
+        run: |
+          echo "${{ steps.build-image.outputs.image }}" >> container_image.txt
+
+      - name: Upload container name artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: container_name
+          path: container_name.txt

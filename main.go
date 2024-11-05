@@ -8,7 +8,6 @@ import (
 	"points/models"
 
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -32,7 +31,6 @@ func main() {
 
 	r := gin.Default()
 	r.Use(gin.Recovery())
-	r.Use(handlers.MetricsMiddleware) // prometheus
 
 	r.GET("customers/:id", handlers.GetCustomerByID)
 	r.GET("customers/", handlers.GetCustomers)
@@ -40,8 +38,6 @@ func main() {
 	r.PUT("customers/:id", handlers.PutCustomer)
 
 	r.POST("/transactions", handlers.PostTransaction)
-
-	r.GET("/metrics", gin.WrapH(promhttp.Handler())) // prometheus
 
 	if err := r.Run("0.0.0.0:8081"); err != nil {
 		log.Fatal("Failed to run server: ", err)
