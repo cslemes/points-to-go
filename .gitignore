@@ -3,3 +3,6 @@
 *.log
 *.sqlite3
 *.env
+
+terraform/.terraform
+test.yaml
