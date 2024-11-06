@@ -12,7 +12,7 @@ env:
   TF_WORKING_DIR: "./terraform"
   BUCKET_NAME: ${{ vars.BUCKET_NAME }}
   AWS_REGION: ${{ vars.AWS_REGION }}
-  ECR_REPOSITORY: ${{ github.event.repository.name }}
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
 
 jobs:
   lint:
@@ -61,6 +61,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create ECR repository if not exists
+        run: |
+          set +e
+          REPO_EXISTS=$(aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} 2>&1)
+          if [[ $REPO_EXISTS == *"RepositoryNotFoundException"* ]]; then
+            echo "Repositório ${{ env.ECR_REPOSITORY }} não encontrado. Criando..."
+            aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
+          else
+            echo "Repositório ${{ env.ECR_REPOSITORY }} já existe."
+          fi
+          set -e
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -105,6 +121,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
