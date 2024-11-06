@@ -54,6 +54,8 @@ jobs:
     # needs: [lint, test]
     needs: [lint]
     runs-on: ubuntu-latest
+    outputs:
+      CONTAINER_IMAGE: ${{ steps.meta.outputs.image }}
 
     steps:
       - name: Checkout
@@ -134,14 +136,14 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
       - name: Terraform Plan
-        run: terraform plan -var container_image=${{ steps.meta.outputs.image }}
+        run: terraform plan -var container_image=${{ env.CONTAINER_IMAGE }}
         working-directory: ${{ env.TF_WORKING_DIR }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
       - name: Terraform Apply
-        run: terraform apply --auto-approve -var container_image=${{ steps.meta.outputs.image }}
+        run: terraform apply --auto-approve -var container_image=${{ env.CONTAINER_IMAGE }}
         working-directory: ${{ env.TF_WORKING_DIR }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
