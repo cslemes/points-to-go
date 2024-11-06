@@ -76,7 +76,3 @@ resource "aws_ecs_service" "points_to_go" {
     container_name = "points"
   }
 }
-
-
-
-
