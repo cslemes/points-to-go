@@ -7,7 +7,7 @@ on:
       - develop
 
 env:
-  GO_VERSION: 1.20
+  GO_VERSION: 1.23
   TF_VERSION: 1.9.8
   TF_WORKING_DIR: "./terraform"
   BUCKET_NAME: ${{ vars.BUCKET_NAME }}
@@ -23,19 +23,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v4
-      #   with:
-      #     go-version: ${{ env.GO_VERSION }}
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          args: --timeout=5m
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
 
       - name: Run Lint
-        run: golangci-lint run
+        run: golangci-lint run ./... -E errcheck
 
       - name: Run gosec
         uses: securego/gosec@master
@@ -59,24 +56,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ env.GO_VERSION }}
-      - name: Install dependencies
-        run: |
-          go mod download
-          go mod verify
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
       - name: Generate Docker metadata
         id: meta
         uses: docker/metadata-action@v4
