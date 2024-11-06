@@ -48,7 +48,8 @@ jobs:
   #       run: go test -v ./...
 
   build:
-    needs: [lint, test]
+    # needs: [lint, test]
+    needs: [lint]
     runs-on: ubuntu-latest
 
     steps:
