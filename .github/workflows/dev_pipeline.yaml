@@ -55,7 +55,7 @@ jobs:
     needs: [lint]
     runs-on: ubuntu-latest
     outputs:
-      container_image: ${{ steps.meta.outputs.image }}
+      container_image: ${{ steps.meta.outputs.tags }}
 
     steps:
       - name: Checkout
