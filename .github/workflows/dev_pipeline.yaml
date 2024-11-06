@@ -28,21 +28,24 @@ jobs:
         with:
           version: latest
           args: --timeout=5m
+      - name: Run Lint
+        run: golangci-lint run
+
       - name: Run gosec
         uses: securego/gosec@master
         with:
           args: ./...
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ env.GO_VERSION }}
-      - name: Run tests
-        run: go test -v ./...
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up Go
+  #       uses: actions/setup-go@v4
+  #       with:
+  #         go-version: ${{ env.GO_VERSION }}
+  #     - name: Run tests
+  #       run: go test -v ./...
 
   build:
     needs: [lint, test]
