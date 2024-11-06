@@ -39,6 +39,10 @@ data "aws_ssm_parameter" "service_discovery_namespace" {
   name = format("/%s/ecs/service_discovery_namespace", var.project_name)
 }
 
+data "aws_ssm_parameter" "service_discovery_service" {
+  name = format("/%s/ecs/service_discovery_service", var.project_name)
+}
+
 resource "aws_ecs_task_definition" "task_def" {
   family                   = "task_def"
   network_mode             = "awsvpc"
@@ -75,8 +79,7 @@ resource "aws_ecs_service" "points_to_go" {
   }
 
   service_registries {
-    registry_arn   = data.aws_ssm_parameter.service_discovery_namespace.value
-    container_port = 8081
+    registry_arn   = data.aws_ssm_parameter.service_discovery_service.value
     container_name = "points"
   }
 }
