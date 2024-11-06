@@ -1,24 +1,62 @@
-name: Build and Push to ECR
-
+name: CI Pipeline
 # on:
 #   pull_request:
 #     branches:
 #       - main
 #   push:
-#     branches:
-#       - main
+#     branches: [main]
 
 on:
   push:
     branches:
-      - main
-
-env:
-  AWS_REGION: ${{ vars.AWS_REGION }}
-  REPOSITORY_NAME: ${{ vars.ECR_REPOSITORY }}
+      - dev
 
 jobs:
-  build:
+  ci-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup linter
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --timeout=5m
+
+      - name: Run Lint
+        run: golangci-lint run
+
+      # - name: Run Tests
+      #   run: go test -v
+
+      - name: Run gosec
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=cslemes_points-to-go
+            -Dsonar.organization=cslemes
+            -Dsonar.sources=.
+
+      - name: Check Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: "Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+
+  ci-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -98,3 +136,44 @@ jobs:
           build-args: |
             GO_VERSION=${{ env.GO_VERSION }}
             GITHUB_SHA=${{ github.sha }}
+  cd-terraform:
+    env:
+      TF_VERSION: "1.9.8"
+      TF_WORKING_DIR: "./terraform"
+      BUCKET_NAME: ${{ vars.BUCKET_NAME }}
+      REPOSITORY_NAME: ${{ github.event.repository.name }}
+      CONTAINER_IMAGE: ${{ vars.AWS_ACCOUNT }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}:${{ GITHUB_SHA::8}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+
+      - name: Terraform Plan
+        run: terraform plan -var container_image=${{ env.CONTAINER_IMAGE }}
+        working-directory: ./terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+
+      - name: Terraform Apply
+        run: terraform apply --auto-approve -var container_image=${{ env.CONTAINER_IMAGE }}
+        working-directory: ./terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}

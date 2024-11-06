@@ -44,7 +44,7 @@ resource "aws_ecs_task_definition" "task_def" {
   execution_role_arn       = data.aws_ssm_parameter.ecsTaskExecutionRole.value
 
   container_definitions = jsonencode([{
-    name      = "my-container"
+    name      = "points_to_go"
     image     = var.container_image
     cpu       = 256
     memory    = 512
@@ -57,19 +57,23 @@ resource "aws_ecs_task_definition" "task_def" {
   }])
 }
 
-resource "aws_ecs_service" "my_service" {
-  name            = "my-service"
+resource "aws_ecs_service" "points_to_go" {
+  name            = "points_to_go"
   cluster         = data.aws_ssm_parameter.cluster_id.value
   task_definition = aws_ecs_task_definition.task_def.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
-
-
   network_configuration {
     subnets          = [data.aws_ssm_parameter.public_1.value, data.aws_ssm_parameter.public_2.value]
     security_groups  = [""]
     assign_public_ip = true
+  }
+
+  service_registries {
+    registry_arn   = aws_ecs_service.points_to_go.arn
+    container_port = 8081
+    container_name = "points"
   }
 }
 
