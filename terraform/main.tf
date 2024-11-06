@@ -35,6 +35,10 @@ data "aws_ssm_parameter" "security_group" {
   name = format("/%s/vpc/security_group", var.project_name)
 }
 
+data "aws_ssm_parameter" "service_discovery_namespace" {
+  name = format("/%s/ecs/service_discovery_namespace", var.project_name)
+}
+
 resource "aws_ecs_task_definition" "task_def" {
   family                   = "task_def"
   network_mode             = "awsvpc"
@@ -71,7 +75,7 @@ resource "aws_ecs_service" "points_to_go" {
   }
 
   service_registries {
-    registry_arn   = aws_ecs_service.points_to_go.arn
+    registry_arn   = data.aws_ssm_parameter.service_discovery_namespace.value
     container_port = 8081
     container_name = "points"
   }
