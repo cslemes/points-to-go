@@ -40,13 +40,7 @@ data "aws_ssm_parameter" "ecs_task_role" {
   name = format("/%s/ecs/ecs_task_role", var.project_name)
 }
 
-data "aws_ssm_parameter" "region" {
-  name = format("/%s/ecs/region", var.project_name)
-}
 
-data "aws_ssm_parameter" "mysql_secret" {
-  name = format("/%s/ecs/mysql_secret", var.project_name)
-}
 
 data "aws_ssm_parameter" "sg_vitess" {
   name = format("/%s/vpc/sg_vitess", var.project_name)
@@ -55,4 +49,23 @@ data "aws_ssm_parameter" "sg_vitess" {
 
 data "aws_ssm_parameter" "sg_tmw_services" {
   name = format("/%s/vpc/sg_tmw_services", var.project_name)
+}
+
+# data "aws_ssm_parameter" "db_host" {
+#   name = format("/%s/vitess/db_host", var.project_name)
+# }
+
+# data "aws_ssm_parameter" "db_port" {
+#   name = format("/%s/vitess/db_port", var.project_name)
+# }
+data "aws_secretsmanager_secret" "db_credentials" {
+  name = "db_secret"
+}
+
+data "aws_secretsmanager_secret_version" "db_credentials_version" {
+  secret_id = data.aws_secretsmanager_secret.db_credentials.id
+}
+
+locals {
+  db_credentials = jsondecode(data.aws_secretsmanager_secret_version.db_credentials_version.secret_string)
 }

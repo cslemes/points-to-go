@@ -11,30 +11,15 @@ import (
 
 func OpenDBConnection() (*gorm.DB, error) {
 
-	secretName := os.Getenv("SECRET_NAME")
-	if secretName == "" {
-		return nil, fmt.Errorf("SECRET_NAME environment variable not set")
-	}
-
-	// Get database credentials from Secrets Manager
-	dbSecret, err := getSecret(secretName)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get database credentials: %v", err)
-	}
-
 	// err := godotenv.Load(".env")
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 
-	// HOST_DB := os.Getenv("HOST_DB")
-	// PORT_DB := os.Getenv("PORT_DB")
-	// USER_DB := os.Getenv("USER_DB")
-	// PASSWORD_DB := os.Getenv("PASSWORD_DB")
-	HOST_DB := dbSecret.Host
-	PORT_DB := dbSecret.Port
-	USER_DB := dbSecret.Username
-	PASSWORD_DB := dbSecret.Password
+	HOST_DB := os.Getenv("HOST_DB")
+	PORT_DB := os.Getenv("PORT_DB")
+	USER_DB := os.Getenv("USER_DB")
+	PASSWORD_DB := os.Getenv("PASSWORD_DB")
 
 	log.Println(PORT_DB)
 
