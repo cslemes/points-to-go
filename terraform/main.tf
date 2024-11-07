@@ -43,6 +43,19 @@ data "aws_ssm_parameter" "service_discovery_service" {
   name = format("/%s/ecs/service_discovery_service", var.project_name)
 }
 
+data "aws_ssm_parameter" "ecs_task_role" {
+  name = format("/%s/ecs/task_role", var.project_name)
+}
+
+data "aws_ssm_parameter" "region" {
+  name = format("/%s/region", var.project_name)
+}
+
+data "aws_ssm_parameter" "mysql_secret" {
+  name = format("/%s/mysql_secret", var.project_name)
+}
+
+
 resource "aws_ecs_task_definition" "task_def" {
   family                   = "task_def"
   network_mode             = "awsvpc"
@@ -50,13 +63,22 @@ resource "aws_ecs_task_definition" "task_def" {
   cpu                      = "256"
   memory                   = "512"
   execution_role_arn       = data.aws_ssm_parameter.ecsTaskExecutionRole.value
+  task_role_arn            = data.aws_ssm_parameter.ecs_task_role.value
 
   container_definitions = jsonencode([{
     name      = "points_to_go"
     image     = var.container_image
-    cpu       = 256
-    memory    = 512
     essential = true
+    environment = [
+      {
+        name  = "AWS_REGION"
+        value = data.aws_ssm_parameter.region.value
+      },
+      {
+        name  = "SECRET_NAME"
+        value = data.aws_ssm_parameter.mysql_secret.name
+      }
+    ]
     portMappings = [{
       containerPort = 8081
       hostPort      = 8081
