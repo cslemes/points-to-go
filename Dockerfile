@@ -1,6 +1,6 @@
 FROM golang:1.23.1-alpine3.20 AS build
 
-WORKDIR /app/
+WORKDIR /app
 
 COPY . .
 
@@ -20,5 +20,4 @@ WORKDIR /app
 
 COPY --from=build /app/points /
 
-
-CMD ["./points"]
+CMD ["/points"]

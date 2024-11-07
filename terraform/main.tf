@@ -44,7 +44,7 @@ data "aws_ssm_parameter" "service_discovery_service" {
 }
 
 data "aws_ssm_parameter" "ecs_task_role" {
-  name = format("/%s/ecs/task_role", var.project_name)
+  name = format("/%s/ecs/ecs_task_role", var.project_name)
 }
 
 data "aws_ssm_parameter" "region" {
