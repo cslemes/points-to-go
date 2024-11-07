@@ -20,4 +20,4 @@ WORKDIR /app
 
 COPY --from=build /app/points /
 
-CMD ["/points"]
+ENTRYPOINT ["/points"]

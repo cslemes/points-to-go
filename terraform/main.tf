@@ -5,59 +5,14 @@ variable "project_name" {
   type    = string
   default = "ecs-cluster"
 }
-
-
-data "aws_ssm_parameter" "cluster_name" {
-  name = format("/%s/ecs/cluster_name", var.project_name)
+variable "aws_region" {
+  type    = string
+  default = "us-east-2"
 }
 
-data "aws_ssm_parameter" "cluster_arn" {
-  name = format("/%s/ecs/cluster_arn", var.project_name)
-}
-
-data "aws_ssm_parameter" "cluster_id" {
-  name = format("/%s/ecs/cluster_id", var.project_name)
-}
-
-data "aws_ssm_parameter" "public_1" {
-  name = format("/%s/vpc/subnet_public_1", var.project_name)
-}
-
-data "aws_ssm_parameter" "public_2" {
-  name = format("/%s/vpc/subnet_public_2", var.project_name)
-}
-
-data "aws_ssm_parameter" "ecsTaskExecutionRole" {
-  name = format("/%s/ecs/ecsTaskExecutionRole", var.project_name)
-}
-
-data "aws_ssm_parameter" "security_group" {
-  name = format("/%s/vpc/security_group", var.project_name)
-}
-
-data "aws_ssm_parameter" "service_discovery_namespace" {
-  name = format("/%s/ecs/service_discovery_namespace", var.project_name)
-}
-
-data "aws_ssm_parameter" "service_discovery_service" {
-  name = format("/%s/ecs/service_discovery_service", var.project_name)
-}
-
-data "aws_ssm_parameter" "ecs_task_role" {
-  name = format("/%s/ecs/ecs_task_role", var.project_name)
-}
-
-data "aws_ssm_parameter" "region" {
-  name = format("/%s/region", var.project_name)
-}
-
-data "aws_ssm_parameter" "mysql_secret" {
-  name = format("/%s/mysql_secret", var.project_name)
-}
-
-
+// points to go
 resource "aws_ecs_task_definition" "task_def" {
-  family                   = "task_def"
+  family                   = "tmw_services-${var.project_name}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
@@ -72,11 +27,19 @@ resource "aws_ecs_task_definition" "task_def" {
     environment = [
       {
         name  = "AWS_REGION"
-        value = data.aws_ssm_parameter.region.value
+        value = var.aws_region
       },
       {
         name  = "SECRET_NAME"
-        value = data.aws_ssm_parameter.mysql_secret.name
+        value = data.aws_ssm_parameter.mysql_secret.value
+      },
+      {
+        name      = "DB_HOST"
+        valueFrom = data.aws_ssm_parameter.db_host.value
+      },
+      {
+        name      = "DB_PORT"
+        valueFrom = data.aws_ssm_parameter.db_port.value
       }
     ]
     portMappings = [{
@@ -94,9 +57,10 @@ resource "aws_ecs_service" "points_to_go" {
   desired_count   = 1
   launch_type     = "FARGATE"
 
+
   network_configuration {
     subnets          = [data.aws_ssm_parameter.public_1.value, data.aws_ssm_parameter.public_2.value]
-    security_groups  = [""]
+    security_groups  = [data.aws_ssm_parameter.sg_tmw_services.value]
     assign_public_ip = true
   }
 
@@ -104,4 +68,66 @@ resource "aws_ecs_service" "points_to_go" {
     registry_arn   = data.aws_ssm_parameter.service_discovery_service.value
     container_name = "points"
   }
+}
+
+output "points_to_go_public_ip" {
+  value = aws_ecs_service.points_to_go.load_balancer[0].container_name
+}
+
+// vitess db
+
+resource "aws_ecs_task_definition" "vitess" {
+  family                   = "vitess-${var.project_name}"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "2048"
+  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = data.aws_iam_role.ecs_task_role.arn
+
+
+  container_definitions = jsonencode([
+    {
+      name      = "vitess"
+      image     = "vitess/lite:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 15001
+          hostPort      = 15001
+        },
+        {
+          containerPort = 3306
+          hostPort      = 3306
+        }
+      ]
+    }
+  ])
+}
+
+resource "aws_ecs_service" "vitess" {
+  name            = "vitess-service-${var.project_name}"
+  cluster         = data.aws_ssm_parameter.cluster_id.value
+  task_definition = aws_ecs_task_definition.vitess.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [data.aws_ssm_parameter.public_1.value, data.aws_ssm_parameter.public_2.value]
+    security_groups  = [aws_security_group.vitess.id]
+    assign_public_ip = true
+  }
+}
+
+
+resource "aws_ssm_parameter" "db_host" {
+  name  = "/vitess/db_host"
+  type  = "String"
+  value = "vitess-service-${var.project_name}"
+}
+
+resource "aws_ssm_parameter" "db_port" {
+  name  = "/vitess/db_port"
+  type  = "String"
+  value = "3306"
 }
