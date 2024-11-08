@@ -41,26 +41,13 @@ data "aws_ssm_parameter" "ecs_task_role" {
 }
 
 
-
-data "aws_ssm_parameter" "sg_vitess" {
-  name = format("/%s/vpc/sg_vitess", var.project_name)
-
-}
-
 data "aws_ssm_parameter" "sg_tmw_services" {
   name = format("/%s/vpc/sg_tmw_services", var.project_name)
 }
-
-# data "aws_ssm_parameter" "db_host" {
-#   name = format("/%s/vitess/db_host", var.project_name)
-# }
-
-# data "aws_ssm_parameter" "db_port" {
-#   name = format("/%s/vitess/db_port", var.project_name)
-# }
 data "aws_secretsmanager_secret" "db_credentials" {
   name = "db_secret"
 }
+
 
 data "aws_secretsmanager_secret_version" "db_credentials_version" {
   secret_id = data.aws_secretsmanager_secret.db_credentials.id
@@ -68,4 +55,9 @@ data "aws_secretsmanager_secret_version" "db_credentials_version" {
 
 locals {
   db_credentials = jsondecode(data.aws_secretsmanager_secret_version.db_credentials_version.secret_string)
+}
+
+data "aws_ssm_parameter" "aurora_endpoint" {
+  name = format("/%s/aurora/endpoint", var.project_name)
+
 }
