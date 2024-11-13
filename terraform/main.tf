@@ -10,8 +10,6 @@ variable "aws_region" {
   default = "us-east-2"
 }
 
-
-
 // points to go
 resource "aws_ecs_task_definition" "task_def" {
 

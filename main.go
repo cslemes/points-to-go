@@ -12,7 +12,7 @@ import (
 
 func main() {
 
-	migration := flag.Bool("migrations", true, "Realizar migrations do banco de dados")
+	migration := flag.Bool("migrations", false, "Realizar migrations do banco de dados")
 	flag.Parse()
 
 	db, err := db.OpenDBConnection()
