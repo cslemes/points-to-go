@@ -15,17 +15,16 @@ func OpenDBConnection() (*gorm.DB, error) {
 	// 	log.Fatal(err)
 	// }
 
-	//HOST_DB := os.Getenv("HOST_DB")
+	HOST_DB := os.Getenv("HOST_DB")
 	//PORT_DB := os.Getenv("PORT_DB")
 	USER_DB := os.Getenv("USER_DB")
 	PASSWORD_DB := os.Getenv("PASSWORD_DB")
-	INSTANCE_CONNECTION := os.Getenv("INSTANCE_CONNECTION")
 
 	//log.Println(PORT_DB)
 	// UNIX dsn
 	dsn := "%s:%s@unix(/cloudsql/%s)/%s?charset=utf8mb4&parseTime=True&loc=Local"
 	//dsn := "%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local"
-	dsn = fmt.Sprintf(dsn, USER_DB, PASSWORD_DB, INSTANCE_CONNECTION, "points")
+	dsn = fmt.Sprintf(dsn, USER_DB, PASSWORD_DB, HOST_DB, "points")
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	return db, err
