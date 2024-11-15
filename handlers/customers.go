@@ -11,8 +11,7 @@ import (
 func GetCustomers(c *gin.Context) {
 
 	uuid := c.Query("uuid")
-	//cod_cpf := c.Query("cod_cpf")
-	cod_cpf := "12394588900"
+	cod_cpf := c.Query("cod_cpf")
 	desc_email := c.Query("desc_email")
 	id_twitch := c.Query("id_twitch")
 	id_youtube := c.Query("id_youtube")

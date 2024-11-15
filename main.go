@@ -32,6 +32,10 @@ func main() {
 	r := gin.Default()
 	r.Use(gin.Recovery())
 
+	r.GET("/", func(c *gin.Context) {
+		c.String(200, "Hello World!")
+	})
+
 	r.GET("customers/:id", handlers.GetCustomerByID)
 	r.GET("customers/", handlers.GetCustomers)
 	r.POST("customers/", handlers.PostCustomer)
